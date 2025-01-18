@@ -1,3 +1,21 @@
+local function generateGridFromWorld(width, height)
+    local grid = {}
+    
+    for y = 1, height do
+        grid[y] = {}
+        for x = 1, width do
+            local tile = GetTile(x, y)
+            if tile and tile.FG ~= 0 then
+                grid[y][x] = 1 -- Penghalang (tile ada)
+            else
+                grid[y][x] = 0 -- Jalan (tile kosong)
+            end
+        end
+    end
+    
+    return grid
+end
+
 local FindPath = {}
 
 local function heuristic(a, b)
