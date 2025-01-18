@@ -1,4 +1,4 @@
--- Reference https://raw.githubusercontent.com/wesleywerner/lua-star/refs/heads/master/src/lua-star.lua
+-- Reference: https://raw.githubusercontent.com/wesleywerner/lua-star/refs/heads/master/src/lua-star.lua
 local FindPath = {}
 
 local function heuristic(a, b)
