@@ -1,0 +1,94 @@
+local FindPath = {}
+
+local function heuristic(a, b)
+    return math.abs(a.x - b.x) + math.abs(a.y - b.y)
+end
+
+local function getNeighbors(node, grid, allowDiagonal)
+    local neighbors = {}
+
+    local directions = {
+        {x = 0, y = -1},
+        {x = 0, y = 1},
+        {x = -1, y = 0},
+        {x = 1, y = 0},
+    }
+
+    if allowDiagonal then
+        table.insert(directions, {x = -1, y = -1})
+        table.insert(directions, {x = 1, y = -1})
+        table.insert(directions, {x = -1, y = 1})
+        table.insert(directions, {x = 1, y = 1})
+    end
+
+    for _, dir in ipairs(directions) do
+        local nx, ny = node.x + dir.x, node.y + dir.y
+        if grid[ny] and grid[ny][nx] == 0 then
+            table.insert(neighbors, {x = nx, y = ny})
+        end
+    end
+
+    return neighbors
+end
+
+function FindPath.findPath(start, goal, grid, allowDiagonal)
+    local openSet = {}
+    local closedSet = {}
+    local cameFrom = {}
+    local gScore = {}
+    local fScore = {}
+
+    table.insert(openSet, start)
+    gScore[start.y .. "," .. start.x] = 0
+    fScore[start.y .. "," .. start.x] = heuristic(start, goal)
+
+    while #openSet > 0 do
+        local currentIndex = 1
+        for i, node in ipairs(openSet) do
+            local key = node.y .. "," .. node.x
+            if fScore[key] < fScore[openSet[currentIndex].y .. "," .. openSet[currentIndex].x] then
+                currentIndex = i
+            end
+        end
+
+        local current = table.remove(openSet, currentIndex)
+
+        if current.x == goal.x and current.y == goal.y then
+            local path = {}
+            while current do
+                table.insert(path, 1, {x = current.x, y = current.y})
+                current = cameFrom[current.y .. "," .. current.x]
+            end
+            return path
+        end
+
+        closedSet[current.y .. "," .. current.x] = true
+
+        for _, neighbor in ipairs(getNeighbors(current, grid, allowDiagonal)) do
+            local key = neighbor.y .. "," .. neighbor.x
+            if not closedSet[key] then
+                local tentativeGScore = gScore[current.y .. "," .. current.x] + 1
+                local inOpenSet = false
+                for _, node in ipairs(openSet) do
+                    if node.x == neighbor.x and node.y == neighbor.y then
+                        inOpenSet = true
+                        break
+                    end
+                end
+
+                if not inOpenSet or tentativeGScore < gScore[key] then
+                    cameFrom[key] = current
+                    gScore[key] = tentativeGScore
+                    fScore[key] = tentativeGScore + heuristic(neighbor, goal)
+                    if not inOpenSet then
+                        table.insert(openSet, neighbor)
+                    end
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+return FindPath
