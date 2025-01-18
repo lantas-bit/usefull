@@ -5,7 +5,7 @@ local function generateGridFromWorld(width, height)
         grid[y] = {}
         for x = 1, width do
             local tile = GetTile(x, y)
-            if tile and tile.FG ~= 0 then
+            if tile and tile.fg ~= 0 then
                 grid[y][x] = 1 -- Penghalang (tile ada)
             else
                 grid[y][x] = 0 -- Jalan (tile kosong)
