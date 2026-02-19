@@ -29,9 +29,11 @@ end
 
 function M.load(url)
   local res = MakeRequest(url,"GET", {["User-Agent"] = "LuaClient"}, "", {}, {})
-  if res and res.body then
-    M.raw = res.body
-    return true
+  if res then
+    M.raw = res.body or res.content
+    if M.raw then
+        return true
+    end
   end
   return false
 end
